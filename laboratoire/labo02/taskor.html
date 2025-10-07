@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Taskor</title>
+
+    <style>
+        ul {
+            list-style-type: none;
+            padding-left: 0px;
+        }
+
+        li {
+            margin: 8px 0px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Taskor</h1>
+
+    <form>
+        <input type="text" name="name">
+        <button>Add</button>
+    </form>
+
+    <ul id="tasks"></ul>
+
+    <script>
+        document.querySelector('form').onsubmit = async function (event) {
+            event.preventDefault();
+
+            const form = event.target;
+
+            const newTask = { 
+                name: form.name.value 
+            };
+
+            const options = {
+                method: 'POST', 
+                body: JSON.stringify(newTask)
+            };
+            
+            const error = await fetch("/new-task", options).then(response => response.text())
+
+            if(error == "") {
+                form.reset();
+
+                loadTasks();
+            } else {
+                alert(error)
+            }
+        }
+
+        function id(element) {
+            return element.parentElement.dataset.id;
+        }
+        
+
+        function handleSaveButton(input) {
+            const button = input.parentElement.querySelector(".save");
+            button.disabled = input.value == input.getAttribute("value");
+        }
+
+        async function apply(url, state) {
+            const options = {
+                method: 'POST', 
+                body: JSON.stringify(state)
+            };
+            const error = await fetch(url, options).then(response => response.text());
+
+            if (error != "") {
+                alert(error);
+            }
+
+            loadTasks();
+        }
+
+        async function setCompleted(checkbox) {
+            const completed = {
+                id: id(checkbox),
+                completed: checkbox.checked 
+            };
+            
+            apply("/set-completed", completed);
+        }
+
+        async function save(button) {
+            const name = { 
+                id: id(button),
+                name: button.parentElement.querySelector(".name").value 
+            };
+
+            apply("/update-name", name);
+        }
+
+        async function remove(button) {
+            apply("/remove-task", { id: id(button) });
+        }
+
+        async function loadTasks() {
+            const tasks = await fetch('/tasks', { method: 'GET', cache: "no-store"}).then(response => response.json()).catch( _ => []);
+            const ul = document.querySelector("#tasks");
+            ul.innerHTML = "";
+
+            if (tasks.length > 0) {
+                for(const t of tasks) {
+                    ul.innerHTML += `
+                        <li data-id="${t.id}">
+                            <input type="checkbox" ${t.completed_at ? 'checked' : ''} onchange="setCompleted(this);">
+                            <input class="name" type="text" value="${t.name}" oninput="handleSaveButton(this);">
+                            <button class="save" disabled onclick="save(this);">✔️</button>
+                            <button class="remove" onclick="remove(this);">X</button>
+                        </li>
+                    `;
+                }
+            } else {
+                ul.innerHTML = "Aucunes tâches!"
+            }
+        }
+
+        loadTasks();
+    </script>
+</body>
+</html>
