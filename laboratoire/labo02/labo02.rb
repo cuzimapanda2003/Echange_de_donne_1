@@ -52,10 +52,49 @@ class MySinatraApp < Sinatra::Base
        send_file File.join(File.dirname(__FILE__), 'taskor.html')
         end
 
-        get "/tasks" do
-        content_type :json
-        @messages.to_json
-        end
+get "/tasks" do
+  content_type :json
+
+  begin
+    tasks = @messages.dup
+
+    if params[:name] && !params[:name].strip.empty?
+      critere = params[:name].downcase
+      tasks.select! { |t| t[:name].downcase.include?(critere) }
+    end
+
+    if params[:status]
+      case params[:status]
+      when "pending"
+        tasks.select! { |t| t[:completed_at] == false }
+      when "done"
+        tasks.select! { |t| t[:completed_at] == true }
+      else
+        status 400
+        return "Le paramètre 'status' doit être 'pending' ou 'done'."
+      end
+    end
+
+    if params[:sort]
+      case params[:sort]
+      when "asc"
+        tasks.sort_by! { |t| t[:name].downcase }
+      when "desc"
+        tasks.sort_by! { |t| t[:name].downcase }.reverse!
+      else
+        status 400
+        return "Le paramètre 'sort' doit être 'asc' ou 'desc'."
+      end
+    end
+
+    tasks.to_json
+
+  rescue => e
+    status 400
+    "Erreur lors du traitement de la requête : #{e.message}"
+  end
+end
+
 
 
 
@@ -163,6 +202,14 @@ post "/remove-task" do
   File.write "tasks.json", @messages.to_json
   ""
 end
+
+
+
+
+
+
+
+
 
 
     run! if app_file == $0
