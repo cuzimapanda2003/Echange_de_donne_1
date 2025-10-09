@@ -1,5 +1,3 @@
-
-#pour run le programme: ruby /home/etd/EchangeDeDonne/laboratoire/labo02.rb
 require "bundler/inline"
 
 gemfile do
