@@ -1,3 +1,4 @@
+#ruby /home/etd/EchangeDeDonne/laboratoire/console.rb
 def big_mac_menu
     loop do
   puts "Taskor"
@@ -34,3 +35,5 @@ def big_mac_menu
   end
 end
 end
+
+big_mac_menu
