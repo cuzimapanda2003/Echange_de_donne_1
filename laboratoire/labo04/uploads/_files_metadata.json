@@ -1,0 +1,18 @@
+{
+  "cf24a301-cf39-420b-99ed-22f1f3a9fe3f": {
+    "original_name": "IMG_0373.png",
+    "uploaded_at": "2025-12-18T12:16:29-05:00",
+    "filename": "IMG_0373.png",
+    "owner": "alice",
+    "private": true,
+    "password": "patate"
+  },
+  "7f0b1046-3c10-437e-a40d-36a62af74767": {
+    "original_name": "IMG_0372.png",
+    "uploaded_at": "2025-12-18T12:26:59-05:00",
+    "filename": "IMG_0372.png",
+    "owner": "bob",
+    "private": true,
+    "password": "patate"
+  }
+}
